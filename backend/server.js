@@ -43,6 +43,65 @@
 
 
 
+// import express from 'express';
+// import cors from 'cors';
+// import { connectDB } from './config/db.js';
+// import 'dotenv/config';
+// import userRouter from './routes/userRoute.js';
+// import taskRouter from './routes/taskRoute.js';
+
+// const app = express();
+// const port = process.env.PORT || 4000;
+
+// // CORS CONFIG (IMPORTANT)
+// const allowedOrigins = [
+//   "http://localhost:5173", // local frontend (Vite)
+//   "https://workconsole.vercel.app"          
+// ];
+
+// app.use(cors({
+//   origin: function (origin, callback) {
+//     // allow requests with no origin (like Postman)
+//     if (!origin) return callback(null, true);
+
+//     if (allowedOrigins.includes(origin)) {
+//       return callback(null, true);
+//     } else {
+//       return callback(new Error("Not allowed by CORS"));
+//     }
+//   },
+//   credentials: true
+// }));
+
+// // Middleware
+// app.use(express.json());
+// app.use(express.urlencoded({ extended: true }));
+
+// // Connect DB
+// connectDB();
+
+// // Routes
+// app.use('/api/user', userRouter);
+// app.use('/api/tasks', taskRouter);
+
+// // Test Route
+// app.get('/', (req, res) => {
+//   res.send('API Working');
+// });
+
+// // Start Server
+// app.listen(port, () => {
+//   console.log(`Server running on port ${port}`);
+// });
+
+
+
+
+
+
+
+
+
 import express from 'express';
 import cors from 'cors';
 import { connectDB } from './config/db.js';
@@ -53,43 +112,46 @@ import taskRouter from './routes/taskRoute.js';
 const app = express();
 const port = process.env.PORT || 4000;
 
-// CORS CONFIG (IMPORTANT)
+
+
+// CORS CONFIG
 const allowedOrigins = [
-  "http://localhost:5173", // local frontend (Vite)
-  "https://workconsole.vercel.app"          
+  "http://localhost:5173",
+  "https://workconsole.vercel.app"
 ];
 
-app.use(cors({
-  origin: function (origin, callback) {
-    // allow requests with no origin (like Postman)
-    if (!origin) return callback(null, true);
 
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    } else {
-      return callback(new Error("Not allowed by CORS"));
-    }
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(new Error("CORS blocked "));
   },
   credentials: true
 }));
+
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Connect DB
-connectDB();
 
-// Routes
-app.use('/api/user', userRouter);
-app.use('/api/tasks', taskRouter);
 
-// Test Route
-app.get('/', (req, res) => {
-  res.send('API Working');
-});
+//  WAIT FOR DB BEFORE STARTING SERVER
+const startServer = async () => {
+  await connectDB();
 
-// Start Server
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});
+  app.use('/api/user', userRouter);
+  app.use('/api/tasks', taskRouter);
+
+  app.get('/', (req, res) => {
+    res.send('API Working');
+  });
+
+  
+  app.listen(port, () => {
+    console.log(`Server running on port ${port} 🚀`);
+  });
+};
+
+startServer();
