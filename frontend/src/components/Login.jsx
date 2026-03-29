@@ -22,7 +22,7 @@ const Login = ({ onSubmit, onSwitchMode }) => {
   const navigate = useNavigate()
   const url = "http://localhost:4000"
 
-  // 🔁 Restore session if token exists
+  // Restore session if token exists
   useEffect(() => {
     const token = localStorage.getItem("token")
     const userId = localStorage.getItem("userId")
@@ -48,13 +48,13 @@ const Login = ({ onSubmit, onSwitchMode }) => {
     }
   }, [navigate, onSubmit])
 
-  // 📝 Handle input change
+  // Handle input change
   const handleChange = (e) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  // 🚀 Submit login
+  // Submit login
   // ONLY showing changed part inside handleSubmit
 
 const handleSubmit = async (e) => {
@@ -69,7 +69,7 @@ const handleSubmit = async (e) => {
 
     if (!data.token) throw new Error("Login failed");
 
-    // ✅ ALWAYS store token
+    // ALWAYS store token
     localStorage.setItem("token", data.token);
     localStorage.setItem("userId", data.user.id);
 
@@ -95,7 +95,7 @@ const handleSubmit = async (e) => {
   }
 };
 
-  // 🧩 Input fields config
+  // Input fields config
   const fields = [
     {
       name: "email",

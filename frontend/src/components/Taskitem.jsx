@@ -17,7 +17,7 @@ import {
   getPriorityBadgeColor,
 } from "../assets/dummy";
 
-const API_BASE = "http://localhost:4000/api/tasks";
+const API_BASE = `${import.meta.env.VITE_API_URL}/api/tasks`;
 
 const TaskItem = ({
   task,

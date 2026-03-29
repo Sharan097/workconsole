@@ -292,7 +292,7 @@ const Profile = ({ user, setCurrentUser }) => {
     confirm: "",
   })
 
-  // ✅ SYNC USER (IMPORTANT FOR REAL-TIME REFLECT)
+  // SYNC USER (IMPORTANT FOR REAL-TIME REFLECT)
   useEffect(() => {
     if (user) {
       setProfile({
@@ -302,7 +302,7 @@ const Profile = ({ user, setCurrentUser }) => {
     }
   }, [user])
 
-  // ✅ LOAD FROM BACKEND (SAFE MERGE)
+  // LOAD FROM BACKEND (SAFE MERGE)
   useEffect(() => {
     const token = localStorage.getItem("token")
     if (!token) return
@@ -322,7 +322,7 @@ const Profile = ({ user, setCurrentUser }) => {
       .catch(() => toast.error("Unable to load profile"))
   }, [])
 
-  // ✅ SAVE PROFILE (REAL-TIME UPDATE)
+  // SAVE PROFILE (REAL-TIME UPDATE)
   const saveProfile = async (e) => {
     e.preventDefault()
 
@@ -353,10 +353,10 @@ const Profile = ({ user, setCurrentUser }) => {
 
 
 
-        // ✅ UPDATE GLOBAL STATE
+        // UPDATE GLOBAL STATE
         // setCurrentUser(updatedUser)
 
-        // ✅ UPDATE LOCAL STORAGE (IMPORTANT)
+        //  UPDATE LOCAL STORAGE (IMPORTANT)
         // localStorage.setItem("currentUser", JSON.stringify(updatedUser))
 
 
@@ -378,7 +378,7 @@ const Profile = ({ user, setCurrentUser }) => {
 
 
 
-        toast.success("Profile Updated Successfully 🚀")
+        toast.success("Profile Updated Successfully ")
       } else {
         toast.error(data.message)
       }
@@ -389,7 +389,7 @@ const Profile = ({ user, setCurrentUser }) => {
     }
   }
 
-  // ✅ CHANGE PASSWORD
+  // CHANGE PASSWORD
   const changePassword = async (e) => {
     e.preventDefault()
 
@@ -412,7 +412,7 @@ const Profile = ({ user, setCurrentUser }) => {
       )
 
       if (data.success) {
-        toast.success("Password Updated Successfully 🔐")
+        toast.success("Password Updated Successfully")
 
         setPasswords({
           current: "",
@@ -534,35 +534,33 @@ const Profile = ({ user, setCurrentUser }) => {
 
 
             {/* DANGER ZONE */}
-<div className="md:col-span-2 mt-2">
-  <div className="bg-white rounded-xl border border-red-100 p-6">
-    
-    {/* HEADER */}
-    <div className="flex items-center gap-2 mb-4">
-      <span className="text-red-500 font-semibold text-sm flex items-center gap-2">
-        ⚠ Danger Zone
-      </span>
-    </div>
+          <div className="md:col-span-2 mt-2">
+            <div className="bg-white rounded-xl border border-red-100 p-6">
+              
+              {/* HEADER */}
+              <div className="flex items-center gap-2 mb-4">
+                <span className="text-red-500 font-semibold text-sm flex items-center gap-2">
+                  ⚠ Danger Zone
+                </span>
+              </div>
 
-    {/* LOGOUT BUTTON */}
-    <button
-      onClick={() => {
-        localStorage.removeItem("token")
-        localStorage.removeItem("currentUser")
-        setCurrentUser(null)
-        navigate("/login", { replace: true })
-      }}
-      className="w-full border border-red-200 text-red-600 py-2.5 rounded-lg hover:bg-red-50 transition-all duration-200 font-medium"
-    >
-      Logout
-    </button>
-  </div>
-</div>
+              {/* LOGOUT BUTTON */}
+              <button
+                onClick={() => {
+                  localStorage.removeItem("token")
+                  localStorage.removeItem("currentUser")
+                  setCurrentUser(null)
+                  navigate("/login", { replace: true })
+                }}
+                className="w-full border border-red-200 text-red-600 py-2.5 rounded-lg hover:bg-red-50 transition-all duration-200 font-medium"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
 
 
           </section>
-
-          
         </div>
       </div>
     </div>

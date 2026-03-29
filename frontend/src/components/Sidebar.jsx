@@ -54,12 +54,12 @@ const Sidebar = ({ user, tasks = [] }) => {
           }
           onClick={() => setMobileOpen(false)}
         >
-          {/* ✅ ICON */}
+          {/* ICON */}
           <span className={LINK_CLASSES.icon}>
             {icon}
           </span>
 
-          {/* ✅ TEXT */}
+          {/* TEXT */}
           <span
             className={`${
               isMobile ? "block" : "hidden lg:block"
@@ -98,7 +98,7 @@ const Sidebar = ({ user, tasks = [] }) => {
           </div>
         </div>
 
-        {/* 🔥 SCROLLABLE AREA */}
+        {/* SCROLLABLE AREA */}
         <div className="flex-1 overflow-y-auto p-4 space-y-6">
           {/* MENU */}
           {renderMenuItems()}

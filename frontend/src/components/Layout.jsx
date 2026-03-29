@@ -20,7 +20,7 @@ const Layout = ({ onLogout, user }) => {
   try {
     const token = localStorage.getItem("token");
 
-    // ✅ STRICT TOKEN CHECK
+    // STRICT TOKEN CHECK
     if (!token || token === "undefined" || token === "null") {
       console.warn("Invalid token in storage");
       setTasks([]);
@@ -29,7 +29,7 @@ const Layout = ({ onLogout, user }) => {
     }
 
     const { data } = await axios.get(
-      "http://localhost:4000/api/tasks/gp", 
+      `${import.meta.env.VITE_API_URL}/tasks/gp`, 
       {
         headers: {
           Authorization: `Bearer ${token}`,

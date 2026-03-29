@@ -33,7 +33,7 @@ const App = () => {
     )}&background=random`,
   };
 
-  // ✅ store auth properly
+  // store auth properly
   if (data.token) localStorage.setItem("token", data.token);
   if (data.userId) localStorage.setItem("userId", data.userId);
 
@@ -79,11 +79,16 @@ const App = () => {
 
       {/* PROTECTED ROUTES */}
       <Route element={currentUser ? ( <Layout user={currentUser}  onLogout={handleLogout} />) : (<Navigate to="/login" replace />) }>
-        {/* 🔥 IMPORTANT: child route */}
+
+
+        {/* IMPORTANT: child route */}
+
         <Route index element={<Dashboard />} />
 
         <Route path="/pending" element={<Pendingpage />} />
+
         <Route path="/completed" element={<Completepage />} />
+
         <Route
           path="/profile"
           element={

@@ -15,7 +15,7 @@ import {
   priorityStyles,
 } from "../assets/dummy";
 
-const API_BASE = "http://localhost:4000/api/tasks";
+const API_BASE = `${import.meta.env.VITE_API_URL}/api/tasks`;
 
 const TaskModal = ({ isOpen, onClose, taskToEdit, onSave, onLogout }) => {
   const [taskData, setTaskData] = useState(DEFAULT_TASK);

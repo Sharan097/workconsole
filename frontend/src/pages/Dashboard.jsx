@@ -33,7 +33,9 @@ import {
 import Taskitem from "../components/Taskitem"
 import Taskmodal from "../components/Taskmodal"
 
-const API_BASE = "http://localhost:4000/api/tasks"
+
+const API_BASE = `${import.meta.env.VITE_API_URL}/api/tasks`
+
 
 const Dashboard = () => {
   const { tasks, refreshTasks } = useOutletContext()

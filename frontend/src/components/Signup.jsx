@@ -48,7 +48,7 @@ const SignUp = ({ onSwitchMode, onSubmit }) => {
 
     setFormData(INITIAL_FORM);
 
-    // ✅ ONLY REDIRECT TO LOGIN
+    // ONLY REDIRECT TO LOGIN
     setTimeout(() => {
       navigate("/login", { replace: true });
     }, 800);
