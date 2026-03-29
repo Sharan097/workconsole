@@ -29,7 +29,7 @@ const Layout = ({ onLogout, user }) => {
     }
 
     const { data } = await axios.get(
-      `${import.meta.env.VITE_API_URL}/tasks/gp`, 
+      `${import.meta.env.VITE_API_URL}/api/tasks/gp`, 
       {
         headers: {
           Authorization: `Bearer ${token}`,
