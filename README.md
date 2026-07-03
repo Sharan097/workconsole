@@ -47,8 +47,8 @@ VITE_API_URL=https://workconsole-x14d.onrender.com
 
 ### Backend (.env)
 
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_secret_key
+MONGO_URI=your_mongodb_connection_string,
+JWT_SECRET=your_secret_key,
 GROQ_API_KEY=your_groq_api_key
 
 ---
