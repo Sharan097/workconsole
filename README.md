@@ -61,14 +61,47 @@ git clone https://github.com/Sharan097/workconsole.git
 
 # Backend
 cd backend
-npm install
 npm run dev
+npm install
 
 # Frontend
 cd frontend
-npm install
 npm run dev
 ```
+
+
+---
+# 🚀 Problems Faced while Building the Application:
+
+Problem 1: AI API Security
+
+Problem:
+Directly calling AI APIs from the frontend exposes secret keys.
+
+Solution:
+I redesigned the flow and created a backend AI controller where API keys are stored securely.
+
+---
+
+Problem 2: Global Theme Management
+
+Problem:
+Managing dark mode individually in every component was not scalable.
+
+Solution:
+Created a centralised Theme Context so the entire application updates from one state.
+
+
+----
+
+
+
+# ✨Update Feature in Future: I would improve this application by adding:
+
+Real-time task updates using WebSockets.
+Task analytics dashboard.
+
+
 
 ---
 
