@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
@@ -114,7 +115,10 @@ const TaskItem = ({
 
   return (
     <>
-      <div className={`${TI_CLASSES.wrapper} ${borderColor}`}>
+      {/* NOTE: Since TI_CLASSES are stored in a separate file, I am appending 
+        dark mode classes directly after the imported TI_CLASSES to override/supplement them.
+      */}
+      <div className={`${TI_CLASSES.wrapper} ${borderColor} dark:bg-gray-900 transition-colors duration-300`}>
         
         {/* LEFT */}
         <div className={TI_CLASSES.leftContainer}>
@@ -124,8 +128,10 @@ const TaskItem = ({
             <button
               onClick={handleComplete}
               className={`${TI_CLASSES.completeBtn} ${
-                isCompleted ? "text-green-500" : "text-gray-300"
-              }`}
+                isCompleted 
+                  ? "text-green-500" 
+                  : "text-gray-300 dark:text-gray-600 hover:text-gray-400 dark:hover:text-gray-500"
+              } transition-colors`}
             >
               <CheckCircle2
                 className={`${TI_CLASSES.checkboxIconBase} ${
@@ -141,10 +147,10 @@ const TaskItem = ({
             {/* TITLE + PRIORITY */}
             <div className="flex items-baseline gap-2 mb-1 flex-wrap">
               <h3
-                className={`${TI_CLASSES.titleBase} ${
+                className={`${TI_CLASSES.titleBase} transition-colors ${
                   isCompleted
-                    ? "text-gray-400 line-through"
-                    : "text-gray-800"
+                    ? "text-gray-400 dark:text-gray-600 line-through"
+                    : "text-gray-800 dark:text-gray-100"
                 }`}
               >
                 {task.title}
@@ -161,7 +167,7 @@ const TaskItem = ({
 
             {/* DESCRIPTION */}
             {task.description && (
-              <p className={TI_CLASSES.description}>
+              <p className={`${TI_CLASSES.description} text-gray-500 dark:text-gray-400 transition-colors`}>
                 {task.description}
               </p>
             )}
@@ -169,7 +175,7 @@ const TaskItem = ({
             {/* SUBTASK PROGRESS */}
             {subtasks.length > 0 && (
               <div className={TI_CLASSES.subtasksContainer}>
-                <div className={TI_CLASSES.progressBarBg}>
+                <div className={`${TI_CLASSES.progressBarBg} dark:bg-gray-800`}>
                   <div
                     className={TI_CLASSES.progressBarFg}
                     style={{ width: `${progress}%` }}
@@ -187,18 +193,18 @@ const TaskItem = ({
           <div className="relative">
             <button
               onClick={() => setShowMenu(!showMenu)}
-              className={TI_CLASSES.menuButton}
+              className={`${TI_CLASSES.menuButton} dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200 transition-colors`}
             >
               <MoreVertical className="w-4 h-4" />
             </button>
 
             {showMenu && (
-              <div className={TI_CLASSES.menuDropdown}>
+              <div className={`${TI_CLASSES.menuDropdown} dark:bg-gray-800 dark:border-gray-700`}>
                 {MENU_OPTIONS.map((opt) => (
                   <button
                     key={opt.action}
                     onClick={() => handleAction(opt.action)}
-                    className="w-full px-3 sm:px-4 py-2 text-left text-xs sm:text-sm hover:bg-purple-50 flex items-center gap-2"
+                    className="w-full px-3 sm:px-4 py-2 text-left text-xs sm:text-sm hover:bg-purple-50 dark:hover:bg-gray-700 dark:text-gray-200 flex items-center gap-2 transition-colors"
                   >
                     {opt.icon}
                     {opt.label}
@@ -212,10 +218,10 @@ const TaskItem = ({
           <div>
             {/* DUE DATE */}
             <div
-              className={`${TI_CLASSES.dateRow} ${
+              className={`${TI_CLASSES.dateRow} transition-colors ${
                 task.dueDate && isToday(new Date(task.dueDate))
-                  ? "text-fuchsia-600"
-                  : "text-gray-500"
+                  ? "text-fuchsia-600 dark:text-fuchsia-400"
+                  : "text-gray-500 dark:text-gray-400"
               }`}
             >
               <Calendar className="w-3.5 h-3.5" />
@@ -227,7 +233,7 @@ const TaskItem = ({
             </div>
 
             {/* CREATED */}
-            <div className={TI_CLASSES.createdRow}>
+            <div className={`${TI_CLASSES.createdRow} text-gray-500 dark:text-gray-400 transition-colors`}>
               <Clock className="w-3.5 h-3.5" />
               {task.createdAt
                 ? `Created ${format(

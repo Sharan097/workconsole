@@ -9,6 +9,7 @@
 
 
 
+
 import mongoose from 'mongoose';
 
 export const connectDB = async () => {
@@ -20,6 +21,7 @@ export const connectDB = async () => {
     console.log("MongoDB Connected ✅");
   } catch (error) {
     console.error("MongoDB Connection Failed ❌", error.message);
-    process.exit(1); // stop app if DB fails
+    console.error(error);
+    process.exit(1); 
   }
 };

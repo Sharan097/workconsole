@@ -1,3 +1,4 @@
+
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
@@ -10,56 +11,52 @@ const Layout = ({ onLogout, user }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-
-
-
   const fetchTasks = useCallback(async () => {
-  setLoading(true);
-  setError(null);
+    setLoading(true);
+    setError(null);
 
-  try {
-    const token = localStorage.getItem("token");
+    try {
+      const token = localStorage.getItem("token");
 
-    // STRICT TOKEN CHECK
-    if (!token || token === "undefined" || token === "null") {
-      console.warn("Invalid token in storage");
-      setTasks([]);
-      setLoading(false);
-      return;
-    }
-
-    const { data } = await axios.get(
-      `${import.meta.env.VITE_API_URL}/api/tasks/gp`, 
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      // STRICT TOKEN CHECK
+      if (!token || token === "undefined" || token === "null") {
+        console.warn("Invalid token in storage");
+        setTasks([]);
+        setLoading(false);
+        return;
       }
-    );
 
-    const arr = Array.isArray(data)
-      ? data
-      : Array.isArray(data?.tasks)
-      ? data.tasks
-      : Array.isArray(data?.data)
-      ? data.data
-      : [];
+      const { data } = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/tasks/gp`, 
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-    setTasks(arr);
+      const arr = Array.isArray(data)
+        ? data
+        : Array.isArray(data?.tasks)
+        ? data.tasks
+        : Array.isArray(data?.data)
+        ? data.data
+        : [];
 
-  } catch (err) {
-    console.error("Fetch error:", err);
+      setTasks(arr);
 
-    setTasks([]);
+    } catch (err) {
+      console.error("Fetch error:", err);
 
-    if (err.response?.status === 401) {
-      onLogout();
+      setTasks([]);
+
+      if (err.response?.status === 401) {
+        onLogout();
+      }
+    } finally {
+      setLoading(false);
     }
-  } finally {
-    setLoading(false);
-  }
-}, [onLogout]);
-
+  }, [onLogout]);
 
   useEffect(() => {
     fetchTasks();
@@ -92,7 +89,7 @@ const Layout = ({ onLogout, user }) => {
 
   // STAT CARD
   const StatCard = ({ title, value, icon }) => (
-    <div className="p-3 rounded-xl bg-white shadow-sm border border-purple-100 hover:shadow-md transition-all duration-300 group">
+    <div className="p-3 rounded-xl bg-white dark:bg-gray-900 shadow-sm border border-purple-100 dark:border-gray-800 hover:shadow-md transition-all duration-300 group">
       <div className="flex items-center gap-2">
         <div className="p-1.5 rounded-lg bg-gradient-to-br from-fuchsia-500/10 to-purple-500/10 group-hover:from-fuchsia-500/20 group-hover:to-purple-500/20">
           {icon}
@@ -101,7 +98,7 @@ const Layout = ({ onLogout, user }) => {
           <p className="text-lg sm:text-xl font-bold bg-gradient-to-r from-fuchsia-500 to-purple-600 bg-clip-text text-transparent">
             {value}
           </p>
-          <p className="text-xs text-gray-500 font-medium">{title}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">{title}</p>
         </div>
       </div>
     </div>
@@ -110,7 +107,7 @@ const Layout = ({ onLogout, user }) => {
   // LOADING
   if (loading)
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center transition-colors duration-300">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500" />
       </div>
     );
@@ -118,13 +115,13 @@ const Layout = ({ onLogout, user }) => {
   // ERROR
   if (error)
     return (
-      <div className="min-h-screen bg-gray-50 p-6 flex items-center justify-center">
-        <div className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 max-w-md">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 p-6 flex items-center justify-center transition-colors duration-300">
+        <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-4 rounded-xl border border-red-100 dark:border-red-900/50 max-w-md">
           <p className="font-medium mb-2">Error loading tasks</p>
           <p className="text-sm">{error}</p>
           <button
             onClick={fetchTasks}
-            className="mt-4 px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200"
+            className="mt-4 px-4 py-2 bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/60 transition-colors"
           >
             Try Again
           </button>
@@ -133,7 +130,7 @@ const Layout = ({ onLogout, user }) => {
     );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
       <Navbar user={user} onLogout={onLogout} />
       <Sidebar user={user} tasks={tasks} />
 
@@ -147,8 +144,8 @@ const Layout = ({ onLogout, user }) => {
 
           {/* SIDEBAR STATS */}
           <div className="space-y-6">
-            <div className="bg-white rounded-xl p-4 sm:p-5 shadow-sm border border-purple-100">
-              <h3 className="text-base sm:text-lg font-semibold mb-3 flex items-center gap-2 text-gray-800">
+            <div className="bg-white dark:bg-gray-900 rounded-xl p-4 sm:p-5 shadow-sm border border-purple-100 dark:border-gray-800 transition-colors duration-300">
+              <h3 className="text-base sm:text-lg font-semibold mb-3 flex items-center gap-2 text-gray-800 dark:text-gray-100">
                 <TrendingUp className="w-5 h-5 text-purple-500" />
                 Task Statistics
               </h3>
@@ -160,18 +157,18 @@ const Layout = ({ onLogout, user }) => {
                 <StatCard title="Completion Rate" value={`${stats.completionPercentage}%`} icon={<Zap className="w-4 h-4 text-purple-500" />} />
               </div>
 
-              <hr className="my-3 border-purple-100" />
+              <hr className="my-3 border-purple-100 dark:border-gray-800 transition-colors" />
 
               {/* PROGRESS */}
               <div>
-                <div className="flex justify-between text-sm text-gray-700 mb-1">
+                <div className="flex justify-between text-sm text-gray-700 dark:text-gray-300 mb-1">
                   <span>Task Progress</span>
                   <span>
                     {stats.completedTasks}/{stats.totalCount}
                   </span>
                 </div>
 
-                <div className="w-full h-3 bg-purple-100 rounded-full overflow-hidden">
+                <div className="w-full h-3 bg-purple-100 dark:bg-gray-800 rounded-full overflow-hidden transition-colors">
                   <div
                     className="h-full bg-gradient-to-r from-fuchsia-500 to-purple-600 transition-all duration-500"
                     style={{ width: `${stats.completionPercentage}%` }}
@@ -181,8 +178,8 @@ const Layout = ({ onLogout, user }) => {
             </div>
 
             {/* RECENT ACTIVITY */}
-            <div className="bg-white rounded-xl p-4 sm:p-5 shadow-sm border border-purple-100">
-              <h3 className="text-base sm:text-lg font-semibold mb-3 flex items-center gap-2 text-gray-800">
+            <div className="bg-white dark:bg-gray-900 rounded-xl p-4 sm:p-5 shadow-sm border border-purple-100 dark:border-gray-800 transition-colors duration-300">
+              <h3 className="text-base sm:text-lg font-semibold mb-3 flex items-center gap-2 text-gray-800 dark:text-gray-100">
                 <Clock className="w-5 h-5 text-purple-500" />
                 Recent Activity
               </h3>
@@ -191,13 +188,13 @@ const Layout = ({ onLogout, user }) => {
                 {tasks.slice(0, 3).map((task) => (
                   <div
                     key={task._id || task.id}
-                    className="flex items-center justify-between p-2 sm:p-3 rounded-lg hover:bg-purple-50 transition-colors"
+                    className="flex items-center justify-between p-2 sm:p-3 rounded-lg hover:bg-purple-50 dark:hover:bg-gray-800 transition-colors"
                   >
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-700">
+                      <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
                         {task.title}
                       </p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
                         {task.createdAt
                           ? new Date(task.createdAt).toLocaleDateString()
                           : "No date"}
@@ -207,8 +204,8 @@ const Layout = ({ onLogout, user }) => {
                     <span
                       className={`px-2 py-1 text-xs rounded-full ${
                         task.completed
-                          ? "bg-green-100 text-green-700"
-                          : "bg-fuchsia-100 text-fuchsia-700"
+                          ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+                          : "bg-fuchsia-100 dark:bg-fuchsia-900/30 text-fuchsia-700 dark:text-fuchsia-400"
                       }`}
                     >
                       {task.completed ? "Done" : "Pending"}
@@ -218,7 +215,7 @@ const Layout = ({ onLogout, user }) => {
 
                 {tasks.length === 0 && (
                   <div className="text-center py-4">
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
                       No recent activity
                     </p>
                   </div>

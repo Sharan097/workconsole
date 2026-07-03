@@ -28,6 +28,7 @@ const Login = ({ onSubmit, onSwitchMode }) => {
     const token = localStorage.getItem("token")
     const userId = localStorage.getItem("userId")
 
+    // If token exists, validate it and fetch user data.
     if (token) {
       ;(async () => {
         try {
@@ -49,14 +50,21 @@ const Login = ({ onSubmit, onSwitchMode }) => {
     }
   }, [navigate, onSubmit])
 
+
+
+
+  
+
   // Handle input change
   const handleChange = (e) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
+
   // Submit login
   // ONLY showing changed part inside handleSubmit
+
 
 const handleSubmit = async (e) => {
   e.preventDefault();

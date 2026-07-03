@@ -2,8 +2,11 @@ import express from 'express';
 import authMiddleware from '../middleware/auth.js';
 
 import {  createTask, deleteTask, getTasks, getTaskById, updateTask } from '../controllers/taskController.js';
+import { generateTaskSuggestion } from '../controllers/aiController.js';
 
 const taskRouter = express.Router();
+
+taskRouter.post('/ai-suggest', authMiddleware, generateTaskSuggestion);
 
 taskRouter.route('/gp')
         .get(authMiddleware, getTasks)

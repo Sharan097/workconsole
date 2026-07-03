@@ -1,3 +1,302 @@
+// import React, { useState, useMemo, useCallback } from "react"
+// import axios from "axios"
+// import { useOutletContext } from "react-router-dom"
+
+// import {
+//   HEADER,
+//   WRAPPER,
+//   ADD_BUTTON,
+//   STATS_GRID,
+//   STAT_CARD,
+//   ICON_WRAPPER,
+//   VALUE_CLASS,
+//   LABEL_CLASS,
+//   STATS,
+//   FILTER_OPTIONS,
+//   FILTER_LABELS,
+//   FILTER_WRAPPER,
+//   SELECT_CLASSES,
+//   TABS_WRAPPER,
+//   TAB_BASE,
+//   TAB_ACTIVE,
+//   TAB_INACTIVE,
+//   EMPTY_STATE,
+// } from "../assets/dummy"
+
+// import {
+//   HomeIcon,
+//   Plus,
+//   Filter,
+//   Calendar as CalendarIcon,
+// } from "lucide-react"
+
+// import Taskitem from "../components/Taskitem"
+// import Taskmodal from "../components/Taskmodal"
+
+
+// const API_BASE = `${import.meta.env.VITE_API_URL}/api/tasks`
+
+
+// const Dashboard = () => {
+//   const { tasks, refreshTasks } = useOutletContext()
+
+//   const [showModal, setShowModal] = useState(false)
+//   const [selectedTask, setSelectedTask] = useState(null)
+//   const [filter, setFilter] = useState("all")
+
+//   // ================= STATS =================
+//   const stats = useMemo(() => ({
+//     total: tasks.length,
+//     lowPriority: tasks.filter(
+//       (t) => t.priority?.toLowerCase() === "low"
+//     ).length,
+//     mediumPriority: tasks.filter(
+//       (t) => t.priority?.toLowerCase() === "medium"
+//     ).length,
+//     highPriority: tasks.filter(
+//       (t) => t.priority?.toLowerCase() === "high"
+//     ).length,
+//     completed: tasks.filter(
+//       (t) =>
+//         t.completed === true ||
+//         t.completed === 1 ||
+//         (typeof t.completed === "string" &&
+//           t.completed.toLowerCase() === "yes")
+//     ).length,
+//   }), [tasks])
+
+//   // ================= FILTER =================
+//   const filteredTasks = useMemo(() => {
+//     return tasks.filter((task) => {
+//       const dueDate = new Date(task.dueDate)
+//       const today = new Date()
+//       const nextWeek = new Date(today)
+//       nextWeek.setDate(today.getDate() + 7)
+
+//       switch (filter) {
+//         case "today":
+//           return dueDate.toDateString() === today.toDateString()
+
+//         case "week":
+//           return dueDate >= today && dueDate <= nextWeek
+
+//         case "high":
+//         case "medium":
+//         case "low":
+//           return task.priority?.toLowerCase() === filter
+
+//         default:
+//           return true
+//       }
+//     })
+//   }, [tasks, filter])
+
+//   // ================= SAVE TASK =================
+//   const handleTaskSave = useCallback(async (taskData) => {
+//     try {
+//       if (taskData.id) {
+//         await axios.put(`${API_BASE}/${taskData.id}/gp`, taskData)
+//       }
+//       refreshTasks()
+//       setShowModal(false)
+//       setSelectedTask(null)
+//     } catch (error) {
+//       console.error("Error saving task:", error)
+//     }
+//   }, [refreshTasks])
+
+//   // ================= UI =================
+//   return (
+//     <div className={WRAPPER}>
+      
+//       {/* HEADER */}
+//       <div className={HEADER}>
+//         <div className="min-w-0">
+//           <h1 className="text-xl md:text-3xl font-bold text-gray-800 flex items-center gap-2">
+//             <HomeIcon className="text-purple-500 w-5 h-5 md:w-6 md:h-6" />
+//             <span className="truncate">Task Overview</span>
+//           </h1>
+//           <p className="text-sm text-gray-500 mt-1 ml-7 truncate">
+//             Manage your tasks efficiently
+//           </p>
+//         </div>
+
+//         <button
+//           onClick={() => setShowModal(true)}
+//           className={ADD_BUTTON}
+//         >
+//           <Plus size={18} />
+//           Add New Task
+//         </button>
+//       </div>
+
+//       {/* STATS */}
+//       <div className={STATS_GRID}>
+//         {STATS.map(
+//           ({
+//             key,
+//             label,
+//             icon: Icon,
+//             iconColor,
+//             borderColor = "border-purple-100",
+//             valueKey,
+//             textColor,
+//             gradient,
+//           }) => (
+//             <div key={key} className={`${STAT_CARD} ${borderColor}`}>
+//               <div className="flex items-center gap-2 md:gap-3">
+//                 <div className={`${ICON_WRAPPER} ${iconColor}`}>
+//                   <Icon className="w-4 h-4 md:w-5 md:h-5" />
+//                 </div>
+
+//                 <div className="min-w-0">
+//                   <p
+//                     className={`${VALUE_CLASS} ${
+//                       gradient
+//                         ? "bg-gradient-to-r from-fuchsia-500 to-purple-600 bg-clip-text text-transparent"
+//                         : textColor
+//                     }`}
+//                   >
+//                     {stats[valueKey]}
+//                   </p>
+//                   <p className={LABEL_CLASS}>{label}</p>
+//                 </div>
+//               </div>
+//             </div>
+//           )
+//         )}
+//       </div>
+
+//       {/* CONTENT */}
+//       <div className="space-y-6">
+        
+//         {/* FILTER */}
+//         <div className={FILTER_WRAPPER}>
+//           <div className="flex items-center gap-2 min-w-0">
+//             <Filter className="w-5 h-5 text-purple-500 shrink-0" />
+//             <h2 className="text-base md:text-lg font-semibold text-gray-800 truncate">
+//               {FILTER_LABELS[filter]}
+//             </h2>
+//           </div>
+
+//           {/* MOBILE SELECT */}
+//           <select
+//             value={filter}
+//             onChange={(e) => setFilter(e.target.value)}
+//             className={SELECT_CLASSES}
+//           >
+//             {FILTER_OPTIONS.map((opt) => (
+//               <option key={opt} value={opt}>
+//                 {opt.charAt(0).toUpperCase() + opt.slice(1)}
+//               </option>
+//             ))}
+//           </select>
+
+//           {/* DESKTOP TABS */}
+//           <div className={TABS_WRAPPER}>
+//             {FILTER_OPTIONS.map((opt) => (
+//               <button
+//                 key={opt}
+//                 onClick={() => setFilter(opt)}
+//                 className={`${TAB_BASE} ${
+//                   filter === opt ? TAB_ACTIVE : TAB_INACTIVE
+//                 }`}
+//               >
+//                 {opt.charAt(0).toUpperCase() + opt.slice(1)}
+//               </button>
+//             ))}
+//           </div>
+//         </div>
+
+//         {/* TASK LIST */}
+//         <div className="space-y-4">
+//           {filteredTasks.length === 0 ? (
+//             <div className={EMPTY_STATE.wrapper}>
+//               <div className={EMPTY_STATE.iconWrapper}>
+//                 <CalendarIcon className="w-8 h-8 text-purple-500" />
+//               </div>
+
+//               <h3 className="text-lg font-semibold text-gray-800 mb-2">
+//                 No tasks found
+//               </h3>
+
+//               <p className="text-sm text-gray-500 mb-4">
+//                 {filter === "all"
+//                   ? "Create your first task to get started"
+//                   : "No tasks match this filter"}
+//               </p>
+
+//               <button
+//                 onClick={() => setShowModal(true)}
+//                 className={EMPTY_STATE.btn}
+//               >
+//                 Add New Task
+//               </button>
+//             </div>
+//           ) : (
+//             filteredTasks.map((task) => (
+//               <Taskitem
+//                 key={task._id || task.id}
+//                 task={task}
+//                 onRefresh={refreshTasks}
+//                 showCompleteCheckbox
+//                 onEdit={() => {
+//                   setSelectedTask(task)
+//                   setShowModal(true)
+//                 }}
+//               />
+//             ))
+//           )}
+//         </div>
+
+//         {/* ADD TASK BOX (DESKTOP) */}
+//         <div
+//           onClick={() => setShowModal(true)}
+//           className="hidden md:flex items-center justify-center p-4 border-2 border-dashed border-purple-200 rounded-xl hover:border-purple-400 bg-purple-50/50 cursor-pointer"
+//         >
+//           <Plus className="w-5 h-5 text-purple-500 mr-2" />
+//           <span className="text-gray-600 font-medium">
+//             Add New Task
+//           </span>
+//         </div>
+//       </div>
+
+//       {/* MODAL */}
+//       <Taskmodal
+//         isOpen={showModal || !!selectedTask}
+//         onClose={() => {
+//           setShowModal(false)
+//           setSelectedTask(null)
+//         }}
+//         taskToEdit={selectedTask}
+//         onSave={handleTaskSave}
+//       />
+//     </div>
+//   )
+// }
+
+// export default Dashboard
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import React, { useState, useMemo, useCallback } from "react"
 import axios from "axios"
 import { useOutletContext } from "react-router-dom"
@@ -33,9 +332,7 @@ import {
 import Taskitem from "../components/Taskitem"
 import Taskmodal from "../components/Taskmodal"
 
-
 const API_BASE = `${import.meta.env.VITE_API_URL}/api/tasks`
-
 
 const Dashboard = () => {
   const { tasks, refreshTasks } = useOutletContext()
@@ -107,16 +404,16 @@ const Dashboard = () => {
 
   // ================= UI =================
   return (
-    <div className={WRAPPER}>
+    <div className={`${WRAPPER} transition-colors duration-300`}>
       
       {/* HEADER */}
       <div className={HEADER}>
         <div className="min-w-0">
-          <h1 className="text-xl md:text-3xl font-bold text-gray-800 flex items-center gap-2">
+          <h1 className="text-xl md:text-3xl font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2 transition-colors">
             <HomeIcon className="text-purple-500 w-5 h-5 md:w-6 md:h-6" />
             <span className="truncate">Task Overview</span>
           </h1>
-          <p className="text-sm text-gray-500 mt-1 ml-7 truncate">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 ml-7 truncate transition-colors">
             Manage your tasks efficiently
           </p>
         </div>
@@ -143,7 +440,7 @@ const Dashboard = () => {
             textColor,
             gradient,
           }) => (
-            <div key={key} className={`${STAT_CARD} ${borderColor}`}>
+            <div key={key} className={`${STAT_CARD} ${borderColor} dark:bg-gray-900 dark:border-gray-800 transition-colors duration-300`}>
               <div className="flex items-center gap-2 md:gap-3">
                 <div className={`${ICON_WRAPPER} ${iconColor}`}>
                   <Icon className="w-4 h-4 md:w-5 md:h-5" />
@@ -159,7 +456,7 @@ const Dashboard = () => {
                   >
                     {stats[valueKey]}
                   </p>
-                  <p className={LABEL_CLASS}>{label}</p>
+                  <p className={`${LABEL_CLASS} dark:text-gray-400 transition-colors`}>{label}</p>
                 </div>
               </div>
             </div>
@@ -170,11 +467,11 @@ const Dashboard = () => {
       {/* CONTENT */}
       <div className="space-y-6">
         
-        {/* FILTER */}
-        <div className={FILTER_WRAPPER}>
+        {/* FILTER BAR CONTAINER */}
+        <div className={`${FILTER_WRAPPER} dark:bg-gray-900 dark:border-gray-800 p-4 rounded-xl border transition-colors duration-300 flex items-center justify-between gap-4`}>
           <div className="flex items-center gap-2 min-w-0">
             <Filter className="w-5 h-5 text-purple-500 shrink-0" />
-            <h2 className="text-base md:text-lg font-semibold text-gray-800 truncate">
+            <h2 className="text-base md:text-lg font-semibold text-gray-800 dark:text-gray-100 truncate transition-colors">
               {FILTER_LABELS[filter]}
             </h2>
           </div>
@@ -183,23 +480,25 @@ const Dashboard = () => {
           <select
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            className={SELECT_CLASSES}
+            className={`${SELECT_CLASSES} dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 transition-colors`}
           >
             {FILTER_OPTIONS.map((opt) => (
-              <option key={opt} value={opt}>
+              <option key={opt} value={opt} className="dark:bg-gray-900">
                 {opt.charAt(0).toUpperCase() + opt.slice(1)}
               </option>
             ))}
           </select>
 
           {/* DESKTOP TABS */}
-          <div className={TABS_WRAPPER}>
+          <div className={`${TABS_WRAPPER} dark:bg-gray-800/50 p-1 rounded-lg transition-colors`}>
             {FILTER_OPTIONS.map((opt) => (
               <button
                 key={opt}
                 onClick={() => setFilter(opt)}
-                className={`${TAB_BASE} ${
-                  filter === opt ? TAB_ACTIVE : TAB_INACTIVE
+                className={`${TAB_BASE} rounded-md transition-all ${
+                  filter === opt 
+                    ? `${TAB_ACTIVE} dark:bg-gray-700 dark:text-white` 
+                    : `${TAB_INACTIVE} dark:text-gray-400 dark:hover:text-gray-200`
                 }`}
               >
                 {opt.charAt(0).toUpperCase() + opt.slice(1)}
@@ -211,16 +510,16 @@ const Dashboard = () => {
         {/* TASK LIST */}
         <div className="space-y-4">
           {filteredTasks.length === 0 ? (
-            <div className={EMPTY_STATE.wrapper}>
+            <div className={`${EMPTY_STATE.wrapper} dark:bg-gray-900 dark:border-gray-800 transition-colors duration-300`}>
               <div className={EMPTY_STATE.iconWrapper}>
                 <CalendarIcon className="w-8 h-8 text-purple-500" />
               </div>
 
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2 transition-colors">
                 No tasks found
               </h3>
 
-              <p className="text-sm text-gray-500 mb-4">
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 transition-colors">
                 {filter === "all"
                   ? "Create your first task to get started"
                   : "No tasks match this filter"}
@@ -249,13 +548,13 @@ const Dashboard = () => {
           )}
         </div>
 
-        {/* ADD TASK BOX (DESKTOP) */}
+        {/* ADD TASK BOX (DESKTOP DASHED) */}
         <div
           onClick={() => setShowModal(true)}
-          className="hidden md:flex items-center justify-center p-4 border-2 border-dashed border-purple-200 rounded-xl hover:border-purple-400 bg-purple-50/50 cursor-pointer"
+          className="hidden md:flex items-center justify-center p-4 border-2 border-dashed border-purple-200 dark:border-gray-800 rounded-xl hover:border-purple-400 dark:hover:border-purple-600 bg-purple-50/50 dark:bg-gray-900/30 cursor-pointer transition-all duration-300 group"
         >
-          <Plus className="w-5 h-5 text-purple-500 mr-2" />
-          <span className="text-gray-600 font-medium">
+          <Plus className="w-5 h-5 text-purple-500 group-hover:text-purple-600 mr-2 transition-colors" />
+          <span className="text-gray-600 dark:text-gray-300 font-medium group-hover:text-gray-800 dark:group-hover:text-gray-100 transition-colors">
             Add New Task
           </span>
         </div>

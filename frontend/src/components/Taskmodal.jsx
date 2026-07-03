@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useCallback } from "react";
 import {
   PlusCircle,
@@ -7,6 +8,7 @@ import {
   Flag,
   Calendar,
   CheckCircle,
+  Sparkles,
 } from "lucide-react";
 
 import {
@@ -20,6 +22,7 @@ const API_BASE = `${import.meta.env.VITE_API_URL}/api/tasks`;
 const TaskModal = ({ isOpen, onClose, taskToEdit, onSave, onLogout }) => {
   const [taskData, setTaskData] = useState(DEFAULT_TASK);
   const [loading, setLoading] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const today = new Date().toISOString().split("T")[0];
@@ -66,6 +69,46 @@ const TaskModal = ({ isOpen, onClose, taskToEdit, onSave, onLogout }) => {
       Authorization: `Bearer ${token}`,
     };
   }, []);
+
+  // Handle AI Suggestion
+  const handleAiSuggest = async () => {
+    if (!taskData.title.trim()) {
+      setError("Please enter a Task Title first to get AI suggestions.");
+      return;
+    }
+
+    setAiLoading(true);
+    setError(null);
+
+    try {
+      const resp = await fetch(`${API_BASE}/ai-suggest`, {
+        method: "POST",
+        headers: getHeaders(),
+        body: JSON.stringify({ 
+          title: taskData.title,
+          description: taskData.description 
+        }),
+      });
+
+      if (!resp.ok) {
+        if (resp.status === 401) return onLogout?.();
+        throw new Error("Failed to fetch AI suggestions");
+      }
+
+      const data = await resp.json();
+      
+      setTaskData((prev) => ({
+        ...prev,
+        description: data.description || prev.description,
+        priority: data.priority || prev.priority,
+      }));
+    } catch (err) {
+      console.error(err);
+      setError("AI Suggestion failed. Please try again or write manually.");
+    } finally {
+      setAiLoading(false);
+    }
+  };
 
   // Submit form
   const handleSubmit = useCallback(
@@ -116,23 +159,23 @@ const TaskModal = ({ isOpen, onClose, taskToEdit, onSave, onLogout }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 backdrop-blur-sm bg-black/20 z-50 flex items-center justify-center p-4">
-      <div className="bg-white border border-purple-100 rounded-xl max-w-md w-full shadow-lg relative p-6 animate-fadeIn">
+    <div className="fixed inset-0 backdrop-blur-sm bg-black/20 dark:bg-black/40 z-50 flex items-center justify-center p-4">
+      <div className="bg-white dark:bg-gray-900 border border-purple-100 dark:border-gray-800 rounded-xl max-w-md w-full shadow-lg relative p-6 animate-fadeIn transition-colors duration-300">
         
         {/* HEADER */}
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2 transition-colors">
             {taskData.id ? (
-              <Save className="text-purple-500 w-5 h-5" />
+              <Save className="text-purple-500 dark:text-purple-400 w-5 h-5" />
             ) : (
-              <PlusCircle className="text-purple-500 w-5 h-5" />
+              <PlusCircle className="text-purple-500 dark:text-purple-400 w-5 h-5" />
             )}
             {taskData.id ? "Edit Task" : "Create New Task"}
           </h2>
 
           <button
             onClick={onClose}
-            className="p-2 hover:bg-purple-100 rounded-lg text-gray-500 hover:text-purple-700 transition-colors"
+            className="p-2 hover:bg-purple-100 dark:hover:bg-gray-800 rounded-lg text-gray-500 dark:text-gray-400 hover:text-purple-700 dark:hover:text-purple-400 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -143,43 +186,55 @@ const TaskModal = ({ isOpen, onClose, taskToEdit, onSave, onLogout }) => {
           
           {/* ERROR */}
           {error && (
-            <div className="text-sm text-red-600 bg-red-50 p-3 rounded-lg border border-red-100">
+            <div className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 p-3 rounded-lg border border-red-100 dark:border-red-900/50">
               {error}
             </div>
           )}
 
           {/* TITLE */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors">
               Task Title
             </label>
-            <div className="flex items-center border border-purple-100 rounded-lg px-3 py-2.5 focus-within:ring-2 focus-within:ring-purple-500">
+            <div className="flex items-center border border-purple-100 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg px-3 py-2.5 focus-within:ring-2 focus-within:ring-purple-500 transition-colors">
               <input
                 type="text"
                 name="title"
                 required
                 value={taskData.title}
                 onChange={handleChange}
-                className="w-full text-sm focus:outline-none"
+                className="w-full text-sm bg-transparent outline-none text-gray-900 dark:text-gray-100 dark:placeholder-gray-500"
                 placeholder="Enter task title"
               />
             </div>
           </div>
 
-          {/* DESCRIPTION */}
+          {/* DESCRIPTION WITH AI SUGGEST */}
           <div>
-            <label className="flex items-center gap-1 text-sm font-medium text-gray-700 mb-1">
-              <AlignLeft className="w-4 h-4 text-purple-500" />
+            <label className="flex items-center gap-1 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors">
+              <AlignLeft className="w-4 h-4 text-purple-500 dark:text-purple-400" />
               Description
             </label>
-            <textarea
-              name="description"
-              rows="3"
-              value={taskData.description}
-              onChange={handleChange}
-              className={baseControlClasses}
-              placeholder="Add details about your task"
-            />
+            <div className="relative">
+              <textarea
+                name="description"
+                rows="3"
+                value={taskData.description}
+                onChange={handleChange}
+                // Appended dark classes to existing base control classes
+                className={`${baseControlClasses} pb-10 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 dark:placeholder-gray-500 transition-colors`} 
+                placeholder="Add details about your task"
+              />
+              <button
+                type="button"
+                onClick={handleAiSuggest}
+                disabled={aiLoading || !taskData.title}
+                className="absolute bottom-2 right-2 flex items-center gap-1 bg-fuchsia-100 dark:bg-fuchsia-900/30 hover:bg-fuchsia-200 dark:hover:bg-fuchsia-900/50 text-purple-700 dark:text-purple-400 text-xs font-medium py-1.5 px-2.5 rounded transition-colors disabled:opacity-50 border border-fuchsia-200 dark:border-fuchsia-900/50"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                {aiLoading ? "Thinking..." : "AI Suggest"}
+              </button>
+            </div>
           </div>
 
           {/* PRIORITY + DATE */}
@@ -187,26 +242,27 @@ const TaskModal = ({ isOpen, onClose, taskToEdit, onSave, onLogout }) => {
             
             {/* PRIORITY */}
             <div>
-              <label className="flex items-center gap-1 text-sm font-medium text-gray-700 mb-1">
-                <Flag className="w-4 h-4 text-purple-500" />
+              <label className="flex items-center gap-1 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors">
+                <Flag className="w-4 h-4 text-purple-500 dark:text-purple-400" />
                 Priority
               </label>
               <select
                 name="priority"
                 value={taskData.priority}
                 onChange={handleChange}
-                className={`${baseControlClasses} ${priorityStyles[taskData.priority]}`}
+                // priorityStyles are dynamic based on state, so we just add the standard dark overrides on top
+                className={`${baseControlClasses} ${priorityStyles[taskData.priority]} dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 transition-colors`}
               >
-                <option>Low</option>
-                <option>Medium</option>
-                <option>High</option>
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
               </select>
             </div>
 
             {/* DUE DATE */}
             <div>
-              <label className="flex items-center gap-1 text-sm font-medium text-gray-700 mb-1">
-                <Calendar className="w-4 h-4 text-purple-500" />
+              <label className="flex items-center gap-1 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors">
+                <Calendar className="w-4 h-4 text-purple-500 dark:text-purple-400" />
                 Due Date
               </label>
               <input
@@ -216,15 +272,16 @@ const TaskModal = ({ isOpen, onClose, taskToEdit, onSave, onLogout }) => {
                 min={today}
                 value={taskData.dueDate}
                 onChange={handleChange}
-                className={baseControlClasses}
+                // Dark mode overrides added to base controls
+                className={`${baseControlClasses} dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 transition-colors`}
               />
             </div>
           </div>
 
           {/* STATUS */}
           <div>
-            <label className="flex items-center gap-1 text-sm font-medium text-gray-700 mb-2">
-              <CheckCircle className="w-4 h-4 text-purple-500" />
+            <label className="flex items-center gap-1 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors">
+              <CheckCircle className="w-4 h-4 text-purple-500 dark:text-purple-400" />
               Status
             </label>
 
@@ -233,16 +290,16 @@ const TaskModal = ({ isOpen, onClose, taskToEdit, onSave, onLogout }) => {
                 { val: "Yes", label: "Completed" },
                 { val: "No", label: "In Progress" },
               ].map(({ val, label }) => (
-                <label key={val} className="flex items-center">
+                <label key={val} className="flex items-center cursor-pointer">
                   <input
                     type="radio"
                     name="completed"
                     value={val}
                     checked={taskData.completed === val}
                     onChange={handleChange}
-                    className="h-4 w-4 text-purple-600 border-gray-300"
+                    className="h-4 w-4 text-purple-600 dark:text-purple-500 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
                   />
-                  <span className="ml-2 text-sm text-gray-700">
+                  <span className="ml-2 text-sm text-gray-700 dark:text-gray-300 transition-colors">
                     {label}
                   </span>
                 </label>
@@ -254,7 +311,7 @@ const TaskModal = ({ isOpen, onClose, taskToEdit, onSave, onLogout }) => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-r from-fuchsia-500 to-purple-600 text-white font-medium py-2.5 px-4 rounded-lg flex items-center justify-center gap-2 disabled:opacity-50 hover:shadow-md transition-all duration-200"
+            className="w-full bg-gradient-to-r from-fuchsia-500 to-purple-600 text-white font-medium py-2.5 px-4 rounded-lg flex items-center justify-center gap-2 disabled:opacity-50 hover:shadow-md transition-all duration-200 mt-2"
           >
             {loading ? (
               "Saving..."

@@ -1,1 +1,16 @@
 @import "tailwindcss";
+
+/* Tell Tailwind v4 to look for the "dark" class on the <html> element */
+@variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  /* Apply smooth transitions to background and text colors globally */
+  html, body {
+    @apply transition-colors duration-300 ease-in-out;
+  }
+  
+  /* Base color mapping */
+  body {
+    @apply bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100;
+  }
+}

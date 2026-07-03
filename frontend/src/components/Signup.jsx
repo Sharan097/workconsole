@@ -32,6 +32,8 @@ const SignUp = ({ onSwitchMode, onSubmit }) => {
   setLoading(true);
   setMessage({ text: "", type: "" });
 
+
+  
   try {
     const { data } = await axios.post(
       `${API_URL}/api/user/register`,
