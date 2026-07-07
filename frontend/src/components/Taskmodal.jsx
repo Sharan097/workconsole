@@ -97,11 +97,32 @@ const TaskModal = ({ isOpen, onClose, taskToEdit, onSave, onLogout }) => {
 
       const data = await resp.json();
       
+      // setTaskData((prev) => ({
+      //   ...prev,
+      //   description: data.description || prev.description,
+      //   priority: data.priority || prev.priority,
+      // }));
+
+
       setTaskData((prev) => ({
-        ...prev,
-        description: data.description || prev.description,
-        priority: data.priority || prev.priority,
-      }));
+  ...prev,
+  // AI generated title update
+  title:
+    data.title ||
+    prev.title,
+
+  // AI generated description update
+  description:
+    data.description ||
+    prev.description,
+
+  // AI priority update
+  priority:
+    data.priority ||
+    prev.priority,
+
+}));
+
     } catch (err) {
       console.error(err);
       setError("AI Suggestion failed. Please try again or write manually.");
