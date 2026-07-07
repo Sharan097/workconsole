@@ -79,7 +79,15 @@
 
 
 
+import Groq from "groq-sdk";
+import dotenv from "dotenv";
 
+dotenv.config();
+
+// Initialize the Groq client instance cleanly
+const groq = new Groq({
+  apiKey: process.env.GROQ_API_KEY,
+});
 
 export const generateTaskSuggestion = async (req, res) => {
   const { title, description } = req.body;
@@ -89,6 +97,11 @@ export const generateTaskSuggestion = async (req, res) => {
       return res.status(400).json({
         message: "Task title is required.",
       });
+    }
+
+    // Double check that your deployment environment actually loaded the key
+    if (!process.env.GROQ_API_KEY) {
+      throw new Error("GROQ_API_KEY is missing from environment variables.");
     }
 
     const prompt = `
@@ -102,7 +115,6 @@ export const generateTaskSuggestion = async (req, res) => {
       User description notes:
       "${description || "None provided"}"
 
-
       Generate:
 
       1. Improve the task title:
@@ -111,17 +123,14 @@ export const generateTaskSuggestion = async (req, res) => {
          - Make it clear and action oriented
          - Keep it short (maximum 8 words)
 
-
       2. Generate a task description:
          - Write 2-3 professional sentences
          - Expand the user idea naturally
          - Keep the original intent
 
-
       3. Suggest priority:
          Must be exactly one:
          "Low", "Medium", "High"
-
 
       Return ONLY valid JSON:
 
@@ -132,61 +141,36 @@ export const generateTaskSuggestion = async (req, res) => {
       }
     `;
 
-
-    const chatCompletion =
-      await groq.chat.completions.create({
-
-        messages: [
-          {
-            role: "user",
-            content: prompt,
-          },
-        ],
-
-        model: "llama-3.1-8b-instant",
-
-        temperature: 0.5,
-
-        response_format: {
-          type: "json_object",
+    const chatCompletion = await groq.chat.completions.create({
+      messages: [
+        {
+          role: "user",
+          content: prompt,
         },
+      ],
+      model: "llama-3.1-8b-instant",
+      temperature: 0.5,
+      response_format: {
+        type: "json_object",
+      },
+    });
 
-      });
+    const text = chatCompletion.choices[0]?.message?.content || "{}";
+    const parsedData = JSON.parse(text);
 
-
-    const text =
-      chatCompletion
-        .choices[0]
-        ?.message
-        ?.content || "{}";
-
-
-    const parsedData =
-      JSON.parse(text);
-
-
+    // Return the correctly parsed structure back to the UI
     res.status(200).json(parsedData);
 
-  } 
-  
-  catch (error) {
+  } catch (error) {
+    console.error("🚨 Groq AI Generation Error:", error);
 
-    console.error(
-      "🚨 Groq AI Generation Error:",
-      error
-    );
-
-
+    // Graceful fallback UI text block structure
     res.status(200).json({
-
       title: title,
-
       description: description
         ? `${description}\n\n(AI suggestion temporarily unavailable)`
         : "Please provide details manually. (AI suggestion temporarily unavailable)",
-
       priority: "Medium",
-
     });
   }
 };
