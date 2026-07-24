@@ -70,6 +70,8 @@ const TaskModal = ({ isOpen, onClose, taskToEdit, onSave, onLogout }) => {
     };
   }, []);
 
+
+
   // Handle AI Suggestion
   const handleAiSuggest = async () => {
     if (!taskData.title.trim()) {
@@ -86,7 +88,9 @@ const TaskModal = ({ isOpen, onClose, taskToEdit, onSave, onLogout }) => {
         headers: getHeaders(),
         body: JSON.stringify({ 
           title: taskData.title,
-          description: taskData.description 
+          description: taskData.description,
+          priority: taskData.priority,   
+        dateTime: taskData.dateTime 
         }),
       });
 
@@ -105,23 +109,22 @@ const TaskModal = ({ isOpen, onClose, taskToEdit, onSave, onLogout }) => {
 
 
       setTaskData((prev) => ({
-  ...prev,
-  // AI generated title update
-  title:
-    data.title ||
-    prev.title,
 
-  // AI generated description update
-  description:
-    data.description ||
-    prev.description,
+      ...prev,
+      
+      // AI generated title update
+      title:
+        data.title || prev.title,
 
-  // AI priority update
-  priority:
-    data.priority ||
-    prev.priority,
+      // AI generated description update
+      description:
+        data.description || prev.description,
 
-}));
+      // AI priority update
+      priority:
+        data.priority || prev.priority,
+
+    }));
 
     } catch (err) {
       console.error(err);
